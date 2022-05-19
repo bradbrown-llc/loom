@@ -1,3 +1,0 @@
-#!/bin/sh
-(cd /app && npx vite build)
-lftp -c "open -u ftpuser:$FTPUSER_PASS $APACHE_IP; mirror -R /app/dist /var/www/localhost/htdocs"
