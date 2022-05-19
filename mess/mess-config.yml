@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mess-config-env
+data:
+  project: "bradbrownllc-tngl"
+  zone: "us-east1-b"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mess-config-vol
+data:
+  ips: "35.231.143.103"
