@@ -1,5 +1,0 @@
-#!/bin/sh
-(adduser ftpuser -D &&  echo ftpuser:$FTPUSER_PASS | chpasswd)
-(apachectl -k start -c "ServerName 127.0.0.1:80" -DFOREGROUND &)
-chown ftpuser /var/www/localhost/htdocs
-vsftpd vsftpd.conf
