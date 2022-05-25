@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: mess-cronjob
+  name: mess-cj
 spec:
   schedule: "0 * * * *"
   jobTemplate:
@@ -12,37 +12,30 @@ spec:
             - name: mess
               image: us-east1-docker.pkg.dev/bradbrownllc-tngl/docker/mess:latest
               env:
-              - name: GOOGLE_APPLICATION_CREDENTIALS
-                valueFrom:
-                  secretKeyRef:
-                    name: mess-secret-keypath
-                    key: keypath
-                    optional: false
               - name: PROJECT
                 valueFrom:
                   configMapKeyRef:
-                    name: mess-config-env
+                    name: mess-cm
                     key: project
               - name: ZONE
                 valueFrom:
                   configMapKeyRef:
-                    name: mess-config-env
+                    name: mess-cm
                     key: zone
+              - name: IPS
+                valueFrom:
+                  configMapKeyRef:
+                    name: mess-cm
+                    key: ips
               volumeMounts:
               - name: sec
                 mountPath: "/etc/sec"
                 readOnly: true
-              - name: cnf
-                mountPath: "/etc/cnf"
-                readOnly: true
-          serviceAccountName: "mess-service-account"
+          serviceAccountName: "mess-sa"
           volumes:
           - name: sec
             secret:
-              secretName: mess-secret-key
+              secretName: mess-secret
               optional: false
-          - name: cnf
-            configMap:
-              name: mess-config-vol
           restartPolicy: Never
       backoffLimit: 1
