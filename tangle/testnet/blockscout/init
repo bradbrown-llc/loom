@@ -1,0 +1,12 @@
+blockscout_start() {
+    su - postgres -c 'pg_ctl start -D /dat'
+    . ./config
+    cd blockscout
+    mix phx.server
+}
+
+[[ -f /dat/postmaster.pid ]] && blockscout_start
+
+rm -rf /dat/*
+cp -rf /tmp/* /dat
+chown -R postgres:postgres /dat

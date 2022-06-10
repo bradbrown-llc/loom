@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blockscout
+  labels:
+    app: blockscout
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blockscout
+  template:
+    metadata:
+      labels:
+        app: blockscout
+    spec:
+      containers:
+      - name: blockscout
+        resources:
+          requests:
+            cpu: 50m
+            memory: 1000Mi
+          limits:
+            cpu: 1000m
+            memory: 1500Mi
+        image: us-east1-docker.pkg.dev/bradbrownllc-tngl/docker/tangle/testnet/blockscout:latest
+        volumeMounts:
+        - name: blockscout-data
+          mountPath: /dat
+      volumes:
+      - name: blockscout-data
+        persistentVolumeClaim:
+          claimName: blockscout-pvc

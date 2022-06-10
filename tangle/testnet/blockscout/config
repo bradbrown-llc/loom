@@ -1,0 +1,10 @@
+export ETHEREUM_JSONRPC_VARIANT=geth
+export ETHEREUM_JSONRPC_HTTP_URL=http://evmosd-svc:8545
+export ETHEREUM_JSONRPC_WS_URL=ws://evmosd-svc:8546
+#export ETHEREUM_JSONRPC_HTTP_URL=http://rpc.testnet.tngl.io
+#export ETHEREUM_JSONRPC_WS_URL=ws://ws.testnet.tngl.io
+export DATABASE_URL=postgresql://postgres:foo@localhost:5432/blockscout
+export COIN=TNGL
+export NETWORK='Tangle'
+export SUBNETWORK='Testnet'
+export HEX_HTTP_CONCURRENCY=5

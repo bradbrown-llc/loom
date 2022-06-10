@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: blockscout-svc
+spec:
+  selector:
+    app: blockscout
+  ports:
+    - name: blockscout-http
+      protocol: TCP
+      port: 4000
+      targetPort: 4000
+    - name: blockscout-ws
+      protocol: TCP
+      port: 4001
+      targetPort: 4001

@@ -1,0 +1,23 @@
+#cat /etc/hosts | sed 's/localhost/localhost blockscout blockscout.local/' > /etc/hosts.tmp
+#cat /etc/hosts.tmp > /etc/hosts
+
+mkdir /run/postgresql
+chown postgres:postgres /run/postgresql
+chown postgres:postgres /tmp
+su - postgres -c 'initdb -D /tmp && pg_ctl start -D /tmp'
+psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'foo';"
+
+cd blockscout
+mix do local.hex --force, deps.get, local.rebar --force, deps.compile
+mix compile
+mix do ecto.create, ecto.migrate
+cd apps/block_scout_web/assets
+npm i --force
+node_modules/webpack/bin/webpack.js --mode production
+cd -
+cd apps/explorer
+npm i --force
+cd -
+mix phx.digest
+cd apps/block_scout_web
+mix phx.gen.cert blockscout blockscout.local
