@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: evmosd-svc
+spec:
+  selector:
+    app: evmosd
+  ports:
+    - name: evmosd-jsonrpc-http
+      protocol: TCP
+      port: 8545
+    - name: evmosd-jsonrpc-ws
+      protocol: TCP
+      port: 8546

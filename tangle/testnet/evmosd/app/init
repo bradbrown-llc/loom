@@ -1,0 +1,74 @@
+evmosd_start() {
+    evmosd start \
+        --home $EVMOSHOME \
+        --pruning=nothing \
+        --minimum-gas-prices=$MINGAS$DENOM \
+        --json-rpc.api eth,txpool,personal,net,debug,web3
+}
+
+EVMOSHOME=/dat/.evmosd
+
+[[ -d /dat/.evmosd ]] && evmosd_start
+
+mkdir -p $EVMOSHOME
+GENESIS=$EVMOSHOME/config/genesis.json
+CONFIG=$EVMOSHOME/config/config.toml
+APP=$EVMOSHOME/config/app.toml
+
+KEY=${KEY:-validator}
+MONIKER=${MONIKER:-test}
+CHAINID=${CHAINID:-test_9001-1}
+KRPASS=${KRPASS:-$(hexdump -e '1/ "%02x"' -n 32 /dev/random)}
+DENOM=${DENOM:-test}
+INITCOINS=${INITCOINS:-100000000000000000000000000}
+DELGCOINS=${DELGCOINS:-1000000000000000000000}
+MAXGAS=${MAXGAS:-10000000}
+MINGAS=${MINGAS:-0.0001}
+
+echo """KEY=${KEY:-validator}
+MONIKER=${MONIKER:-test}
+CHAINID=${CHAINID:-test_9001-1}
+KRPASS=${KRPASS:-$(hexdump -e '1/ "%02x"' -n 32 /dev/random)}
+DENOM=${DENOM:-test}
+INITCOINS=${INITCOINS:-100000000000000000000000000}
+DELGCOINS=${DELGCOINS:-1000000000000000000000}
+MAXGAS=${MAXGAS:-10000000}
+MINGAS=${MINGAS:-0.0001}""" > /.env
+
+# Add key
+(echo $KRPASS; echo $KRPASS) | evmosd keys add $KEY --home $EVMOSHOME
+
+# Disable peer exchange
+sed -i 's/pex = true/pex = false/' $CONFIG
+
+# Set app.toml min gas
+sed -i "s/minimum-gas-prices = \"0aevmos\"/minimum-gas-prices = \"$MINGAS$DENOM\"/" $APP
+
+# Set moniker and chain-id for Evmos
+evmosd init $MONIKER --chain-id $CHAINID --home $EVMOSHOME
+
+# Change parameter token denominations to $DENOM
+sed -i "s/aevmos/$DENOM/g" $GENESIS
+sed -i "s/stake/$DENOM/g" $GENESIS
+sed -i "s/aphoton/$DENOM/g" $GENESIS
+
+# Set gas limit in genesis
+sed -i "s/\"max_gas\": \"-1\"/\"max_gas\": \"$MAXGAS\"/" $GENESIS
+
+# Disable claims module
+sed -i 's/enable_claims = true/enable_claims = false/' $GENESIS
+
+# Allocate genesis accounts (cosmos formatted addresses)
+echo $KRPASS | evmosd add-genesis-account $KEY $INITCOINS$DENOM --home $EVMOSHOME
+
+# Update total supply with claim values
+sed -i "s/\"supply\": \[\]/\"supply\": [{\"amount\":$INITCOINS}]/" $GENESIS
+
+# Sign genesis transaction
+echo $KRPASS | evmosd gentx $KEY $DELGCOINS$DENOM --chain-id $CHAINID --home $EVMOSHOME
+
+# Collect genesis tx
+evmosd collect-gentxs --home $EVMOSHOME
+
+# Start the node (remove the --pruning=nothing flag if historical queries are not needed)
+evmosd_start

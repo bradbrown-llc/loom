@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: evmosd-cm
+data:
+  moniker: tangle-testnet-1
+  chainId: tangle_421-1
+  denom: tngl
+  initCoins: '1000000000000000000000000'
+  delgCoins: '100000000000000000000000'
+  maxGas: '10000000'
+  minGas: '0.000001'

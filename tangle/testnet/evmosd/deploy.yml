@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: evmosd
+  labels:
+    app: evmosd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: evmosd
+  template:
+    metadata:
+      labels:
+        app: evmosd
+    spec:
+      containers:
+      - name: evmosd
+        resources:
+          requests:
+            cpu: 50m
+            memory: 1000Mi
+          limits:
+            cpu: 500m
+            memory: 1000Mi
+        image: us-east1-docker.pkg.dev/bradbrownllc-tngl/docker/tangle/testnet/evmosd:latest
+        volumeMounts:
+        - name: evmosd-data
+          mountPath: /dat
+        env:
+        - name: MONIKER
+          valueFrom:
+            configMapKeyRef:
+              name: evmosd-cm
+              key: moniker
+        - name: CHAINID
+          valueFrom:
+            configMapKeyRef:
+              name: evmosd-cm
+              key: chainId
+        - name: DENOM
+          valueFrom:
+            configMapKeyRef:
+              name: evmosd-cm
+              key: denom
+        - name: INITCOINS
+          valueFrom:
+            configMapKeyRef:
+              name: evmosd-cm
+              key: initCoins
+        - name: DELGCOINS
+          valueFrom:
+            configMapKeyRef:
+              name: evmosd-cm
+              key: delgCoins
+        - name: MAXGAS
+          valueFrom:
+            configMapKeyRef:
+              name: evmosd-cm
+              key: maxGas
+        - name: MINGAS
+          valueFrom:
+            configMapKeyRef:
+              name: evmosd-cm
+              key: minGas
+        - name: KRPASS
+          valueFrom:
+            secretKeyRef:
+              name: evmosd-secrets
+              key: krPass
+      volumes:
+      - name: evmosd-data
+        persistentVolumeClaim:
+          claimName: evmosd-pvc
