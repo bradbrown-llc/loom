@@ -23,7 +23,7 @@ spec:
           limits:
             cpu: 1000m
             memory: 1500Mi
-        image: us-east1-docker.pkg.dev/bradbrownllc-tngl/docker/tangle/testnet/blockscout:latest
+        image: us-east1-docker.pkg.dev/foo/docker/tangle/testnet/blockscout:latest
         volumeMounts:
         - name: blockscout-data
           mountPath: /dat

@@ -2,7 +2,7 @@
 
 name = $$(pwd | grep -Po 'loom.\K.+')
 port = $$(cat Dockerfile | grep -oP 'EXPOSE.\K.+' | sed -E 's/[[:digit:]]+/&:&\/tcp/g')
-proj = bradbrownllc-tngl
+proj = foo
 zone = us-east1
 gtag = $(zone)-docker.pkg.dev/$(proj)/docker/$(name)
 secr = $(name)/secrets.yml
